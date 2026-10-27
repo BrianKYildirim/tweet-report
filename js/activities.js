@@ -87,6 +87,17 @@ function parseTweets(runkeeper_tweets) {
 	  }
 	};
 	vegaEmbed('#distanceVisAggregated', distance_vis_aggregated_spec, {actions:false});
+
+	const distanceVis = document.getElementById('distanceVis');
+	const distanceVisAggregated = document.getElementById('distanceVisAggregated');
+	const aggregateButton = document.getElementById('aggregate');
+	distanceVisAggregated.style.display = 'none';
+	aggregateButton.addEventListener('click', function() {
+		const showingMeans = distanceVisAggregated.style.display != 'none';
+		distanceVis.style.display = showingMeans ? 'block' : 'none';
+		distanceVisAggregated.style.display = showingMeans ? 'none' : 'block';
+		aggregateButton.innerText = showingMeans ? 'Show means' : 'Show all activities';
+	});
 }
 
 //Wait for the DOM to load
