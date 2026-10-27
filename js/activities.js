@@ -27,9 +27,13 @@ function parseTweets(runkeeper_tweets) {
 	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
 	  "description": "A graph of the number of Tweets containing each type of activity.",
 	  "data": {
-	    "values": tweet_array
+	    "values": sorted_activities.map(activity => ({"activity": activity, "count": activity_counts[activity]}))
+	  },
+	  "mark": "bar",
+	  "encoding": {
+	    "x": {"field": "activity", "type": "nominal", "sort": "-y", "title": "Activity type"},
+	    "y": {"field": "count", "type": "quantitative", "title": "Number of tweets"}
 	  }
-	  //TODO: Add mark and encoding
 	};
 	vegaEmbed('#activityVis', activity_vis_spec, {actions:false});
 
@@ -50,6 +54,39 @@ function parseTweets(runkeeper_tweets) {
 	const weekend_mean = meanDistance(top_events.filter(isWeekend));
 	const weekday_mean = meanDistance(top_events.filter(tweet => !isWeekend(tweet)));
 	document.getElementById('weekdayOrWeekendLonger').innerText = weekend_mean > weekday_mean ? 'weekends' : 'weekdays';
+
+	const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+	const distance_data = top_events.map(tweet => ({
+		"day": days[tweet.time.getDay()],
+		"distance": tweet.distance,
+		"activity": tweet.activityType
+	}));
+
+	distance_vis_spec = {
+	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+	  "description": "Distance by day of the week for the three most-tweeted activities.",
+	  "data": {"values": distance_data},
+	  "mark": "point",
+	  "encoding": {
+	    "x": {"field": "day", "type": "ordinal", "sort": days, "title": "Day of week"},
+	    "y": {"field": "distance", "type": "quantitative", "title": "Distance (mi)"},
+	    "color": {"field": "activity", "type": "nominal", "title": "Activity"}
+	  }
+	};
+	vegaEmbed('#distanceVis', distance_vis_spec, {actions:false});
+
+	distance_vis_aggregated_spec = {
+	  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+	  "description": "Mean distance by day of the week for the three most-tweeted activities.",
+	  "data": {"values": distance_data},
+	  "mark": "point",
+	  "encoding": {
+	    "x": {"field": "day", "type": "ordinal", "sort": days, "title": "Day of week"},
+	    "y": {"field": "distance", "aggregate": "mean", "type": "quantitative", "title": "Mean distance (mi)"},
+	    "color": {"field": "activity", "type": "nominal", "title": "Activity"}
+	  }
+	};
+	vegaEmbed('#distanceVisAggregated', distance_vis_aggregated_spec, {actions:false});
 }
 
 //Wait for the DOM to load

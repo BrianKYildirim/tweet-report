@@ -13,6 +13,7 @@ function parseTweets(runkeeper_tweets) {
 	//It works correctly, your task is to update the text of the other tags in the HTML file!
 	document.getElementById('numberTweets').innerText = tweet_array.length;
 
+	
 	const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 	const times = tweet_array.map(tweet => tweet.time.getTime());
 	document.getElementById('firstDate').innerText = new Date(Math.min(...times)).toLocaleDateString('en-US', dateOptions);
